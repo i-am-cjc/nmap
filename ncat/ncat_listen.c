@@ -1176,7 +1176,7 @@ static void chat_get_time(char *buf) {
     time (&rawtime);
     timeinfo = localtime ( &rawtime );
 
-    Snprintf(buf, sizeof(buf),
+    Snprintf(buf,6,
             "%d:%d",timeinfo->tm_hour, timeinfo->tm_min);
 }
 
