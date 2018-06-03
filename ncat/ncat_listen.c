@@ -136,6 +136,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <limits.h>
+#include <time.h>
 #ifndef WIN32
 #include <unistd.h>
 #include <sys/socket.h>
@@ -1169,6 +1170,16 @@ static int chat_announce_connect(int fd, const union sockaddr_u *su)
     return ret;
 }
 
+static void chat_get_time(char *buf) {
+    time_t rawtime;
+    struct tm * timeinfo;
+    time (&rawtime);
+    timeinfo = localtime ( &rawtime );
+
+    Snprintf(buf, sizeof(buf),
+            "%d:%d",timeinfo->tm_hour, timeinfo->tm_min);
+}
+
 static int chat_announce_disconnect(int fd)
 {
     char buf[128];
@@ -1197,9 +1208,12 @@ static char *chat_filter(char *buf, size_t size, int fd, int *nwritten)
     const char *p;
     int i;
 
+    char t[5];
+    chat_get_time(&t);
+
     n = 32;
     result = (char *) safe_malloc(n);
-    i = Snprintf(result, n, "<user%d> ", fd);
+    i = Snprintf(result, n, "%s <user%d> ", t, fd);
 
     /* Escape control characters. */
     for (p = buf; p - buf < size; p++) {
